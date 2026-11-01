@@ -1,0 +1,31 @@
+name: Build Elite mod from zip
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Unzip and build
+        run: |
+          unzip -q EnergizedPower_elite_source.zip -d proj
+          cd proj
+          chmod +x gradlew
+          ./gradlew build --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: energizedpower-elite-jar
+          path: |
+            proj/build/libs/*.jar
+            !proj/build/libs/*-sources.jar
+            !proj/build/libs/*-javadoc.jar
